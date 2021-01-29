@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <pic16f887.h>
-
 #include "lcd.h"
 
 // CONFIG1
@@ -51,24 +50,31 @@ void main(void) {
     float val;
     char s[20];
     Lcd_Init();
-    
+
     while (1) {
         ADCON0bits.GO_nDONE = 1;
         while (ADCON0bits.GO_nDONE) {
             adc = ADRESH;
-            adc=adc<<8;
-            adc=adc+ADRESL;
-            //val=(adc*100)/255;
-            val=(-0.195*adc)+204.3;
+            adc = adc << 8;
+            adc = adc + ADRESL;
+            val = (-0.17 * adc) + 173.91;
             Lcd_Clear();
             Lcd_Set_Cursor(1, 1);
             Lcd_Write_String("HUMEDAD");
             Lcd_Set_Cursor(2, 1);
             sprintf(s, "VALOR= %f", val);
             Lcd_Write_String(s);
-            __delay_ms(300);  
+            __delay_ms(500);
+
         }
-         
+        if (val <= 60) {
+            PORTBbits.RB1 = 1;
+        }
+        if (val > 60) {
+            PORTBbits.RB1 = 0;
+        }
+
     }
+
     return;
 }
